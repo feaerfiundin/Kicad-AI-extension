@@ -1,0 +1,112 @@
+Product Requirements Document (PRD)
+
+🧠 Titolo del Progetto
+
+SmartCircuit Designer for KiCad  
+Un'estensione intelligente per la progettazione, analisi, ottimizzazione e documentazione di circuiti elettronici professionali.
+
+---
+
+🎯 Obiettivo
+
+Sviluppare un’estensione/plugin per KiCad che permetta ai progettisti di:
+- Generare schematici .kicad_sch professionali, conformi alle normative europee (CEI, EMC, RoHS)
+- Eseguire calcoli elettrici, simulazioni SPICE, analisi termiche e tolleranze
+- Visualizzare documentazione tecnica e BOM con stima costi reali
+- Importare immagini di PCB esistenti per fare reverse engineering
+- Validare, modificare e migliorare progetti esistenti .sch
+
+---
+
+🔩 Funzionalità principali
+
+| Funzione | Descrizione |
+|---------|-------------|
+| ✍️ Prompt parametrico | Interfaccia per creare un circuito da specifiche tecniche |
+| ⚙️ Generazione schematico | Creazione .kicad_sch conforme a sexpr schematic format |
+| 📊 Analisi tecnica | Calcoli elettrici, tolleranze, analisi termica (>10W), simulazioni LTSpice |
+| 💰 BOM + Costi | Generazione distinta base con costi da fornitori reali (Farnell, Mouser…) |
+| 🧼 Verifica normativa | Validazione rispetto a CEI, EMC, RoHS e best practices PCB |
+| 🔁 Reverse engineering | Importazione immagine PCB → generazione schematico .sch |
+| 🛡️ Sicurezza e protezione | Controllo polarità, protezione da sovratensione/inversione, filtri EMI/EMC |
+
+---
+
+🖼️ Mockup della UI
+
+`plaintext
+┌──────────────────────────────────────────────┐
+│  SmartCircuit Designer ─ KiCad Extension     │
+├──────────────────────────────────────────────┤
+│ ◉ Obiettivo circuito: [Illuminazione LED]    │
+│ ◉ Alimentazione: [12V DC]                    │
+│ ◉ Potenza max: [20W]                         │
+│ ◉ Tipologia: [Alimentazione] ▼               │
+│ ◉ Normative: [CEI, EMC, RoHS] ✓              │
+│ ◉ Budget massimo: [5€]                       │
+│ ◉ Simulazione SPICE: [✓]                     │
+│ ◉ Reverse image: [Scegli file 📷]            │
+│                                              │
+│      [Analizza Circuito]   [Genera Schematico] │
+└──────────────────────────────────────────────┘
+`
+
+---
+
+🔌 API Schema di base
+
+`yaml
+POST /generate-circuit
+Content-Type: application/json
+
+{
+  "objective": "Driver LED 350mA",
+  "power_in": "12V",
+  "power_out": "3.2V 350mA",
+  "type": "Alimentazione",
+  "constraints": {
+    "maxsizemm": "40x40",
+    "budget_eur": 5.0,
+    "norms": ["CEI", "EMC", "RoHS"],
+    "simulate_spice": true,
+    "analyze_thermal": true
+  },
+  "reverseimage": "base64encodedimagedata"
+}
+`
+
+Risposta:
+
+`json
+{
+  "schfile": "base64encodedkicadsch",
+  "bom": [
+    {"part": "R1", "value": "470Ω", "supplier": "Farnell", "price": "0.06€"},
+    {"part": "D1", "value": "LED white", "supplier": "Mouser", "price": "0.14€"}
+  ],
+  "technicalreportmd": "base64encodedmarkdown_report",
+  "ltspicefile": "base64encodedspicefile"
+}
+`
+
+---
+
+🚀 Fasi di sviluppo
+
+1. Definizione schema UI + plugin Python per KiCad
+2. Integrazione API Copilot (via chiamate REST/GraphQL o plugin locale)
+3. Parsing e validazione file .kicad_sch
+4. Motore di generazione schemi e simulazioni
+5. Generazione documentazione e BOM automatica
+6. Supporto reverse engineering da immagini
+
+---
+
+📎 Note
+
+- La UI può essere sviluppata con wxPython (compatibile con KiCad)
+- L'estensione può essere pacchettizzata come Action Plugin o Tool Plugin
+- Eventuali accessi esterni a Copilot richiederanno gestione API key + sicurezza
+- Le simulazioni LTSpice possono essere generate in formato .asc per visualizzazione grafica
+
+---
